@@ -58,3 +58,6 @@ class Demand(Base):
     source_node_id = Column(Integer, ForeignKey("nodes.id"))
     dest_node_id = Column(Integer, ForeignKey("nodes.id"))
     volume = Column(Float)  # h_d из задания
+
+    source_node = relationship("Node", foreign_keys=[source_node_id])
+    dest_node = relationship("Node", foreign_keys=[dest_node_id])
