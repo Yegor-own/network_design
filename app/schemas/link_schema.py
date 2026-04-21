@@ -6,7 +6,7 @@ class CandidateLinkBase(BaseModel):
     node_b_id: int
 
     cost_per_km: float
-    cost_per_unit: float
+    cost_per_km: float
 
 
 class CandidateLinkRead(CandidateLinkBase):
