@@ -4,10 +4,16 @@ from app.schemas.node_schema import NodeCreate
 from geoalchemy2.functions import ST_X, ST_Y
 
 def get_nodes(db: Session):
-    # Вытаскиваем сразу с координатами, чтобы не делать это в API
     return db.query(
         Node.id,
         Node.name,
+        ST_Y(Node.location).label("lat"),
+        ST_X(Node.location).label("lng"),
+    ).all()
+
+def get_nodes_except_name(db: Session):
+    return db.query(
+        Node.id,
         ST_Y(Node.location).label("lat"),
         ST_X(Node.location).label("lng"),
     ).all()

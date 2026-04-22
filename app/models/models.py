@@ -2,10 +2,9 @@ from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from geoalchemy2 import Geometry
 from geoalchemy2.elements import WKTElement
-from app.database import Base  # Базовый класс, от которого все наследуются
+from app.database import Base
 
 def to_geo_point(lat: float, lng: float):
-    # ВНИМАНИЕ: В PostGIS порядок обычно (Долгота, Широта) -> (LNG, LAT)
     return WKTElement(f'POINT({lng} {lat})', srid=4326)
 
 class Node(Base):

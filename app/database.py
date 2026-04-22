@@ -1,20 +1,27 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, URL
+import os
+from dotenv import load_dotenv
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# В реальном проекте вынеси это в .env
-DATABASE_URL = "postgresql://root:password@localhost:5432/network_design"
+# DATABASE_URL = "postgresql://root:password@localhost:5432/network_design"
 
-# echo=True заставит алхимию писать все SQL-запросы в консоль (удобно при дебаге)
+load_dotenv()
+DATABASE_URL = URL.create(
+    drivername=os.getenv("DB_DRIVER"),
+    username=os.getenv("USERNAME"),
+    password=os.getenv("PASSWORD"),
+    host=os.getenv("HOST"),
+    port=os.getenv("PORT"),
+    database=os.getenv("DB_NAME"),
+)
+
 engine = create_engine(DATABASE_URL, echo=True)
 
-# Это фабрика сессий (аналог пула соединений)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# От этого класса будут наследоваться все модели
 Base = declarative_base()
 
-# Эта функция — "зависимость". Она открывает сессию для запроса и закрывает её после
 def get_db():
     db = SessionLocal()
     try:

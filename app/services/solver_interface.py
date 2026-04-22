@@ -7,17 +7,26 @@ class SolverNode(BaseModel):
     lat: float
     lng: float
 
+    class Config:
+        from_attributes = True
+
 class SolverLink(BaseModel):
     id: int
     source_id: int
     target_id: int
     distance: float
 
+    class Config:
+        from_attributes = True
+
 class SolverDemand(BaseModel):
     id: int
     source_id: int
     dest_id: int
     volume: float  # h_d
+
+    class Config:
+        from_attributes = True
 
 class SolverResult(BaseModel):
     links_results: Dict[int, Dict[str, float]]
