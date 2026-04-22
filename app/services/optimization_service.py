@@ -38,21 +38,20 @@ def run_network_optimization(db: Session):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-    rlink_id = -1
     for link_id, data in result.links_results.items():
         if data["z"] > 0.5:
             new_rlink = ResultLink(
                 candidate_link_id=link_id,
                 capacity=data["u"],
             )
-            rlink_id = create_result_link(db, new_rlink) #TODO refactor error
+            db.add(new_rlink)
 
     db.query(FlowAssignment).delete()
 
     for flow in result.flows:
         new_flow = FlowAssignment(
             demand_id=flow["demand_id"],
-            link_id=rlink_id, # flow["link_id"] TODO chek if need
+            link_id=flow["link_id"],
             flow_value=flow["flow"]
         )
         db.add(new_flow)

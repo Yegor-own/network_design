@@ -15,6 +15,7 @@ class CandidateLinkRead(CandidateLinkBase):
 class CandidateLinkReadFull(CandidateLinkRead):
     node_a: NodeRead
     node_b: NodeRead
+    distance: float
 
     class Config:
         from_attributes = True
