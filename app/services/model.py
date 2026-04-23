@@ -1,6 +1,6 @@
 from pyomo.environ import *
 
-def create_model(nodes, links, demands, U_max):
+def create_model(nodes, links, demands, U_max, cost_km, cost_u):
 
     model = ConcreteModel()
 
@@ -17,8 +17,8 @@ def create_model(nodes, links, demands, U_max):
 
     model.U = Param(initialize=U_max)
 
-    model.ckm = Param(model.E, initialize={l.id: l.cost_km for l in links})
-    model.cu  = Param(model.E, initialize={l.id: l.cost_unit for l in links})
+    model.ckm = Param(initialize=cost_km)
+    model.cu = Param(initialize=cost_u)
     model.de  = Param(model.E, initialize={l.id: l.distance for l in links})
 
     model.h = Param(model.D, initialize={d.id: d.volume for d in demands})

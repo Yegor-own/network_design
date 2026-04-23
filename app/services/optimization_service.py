@@ -31,10 +31,11 @@ def run_network_optimization(db: Session):
         demands_dto.append(SolverDemand.model_validate(demand))
 
     U_max = 1000.0  # TODO from NetParam
+    cost_km, cost_u = 1, 1
     solver = PyomoNetworkSolver()
 
     try:
-        result = solver.solve(nodes_dto, links_dto, demands_dto, U_max)
+        result = solver.solve(nodes_dto, links_dto, demands_dto, U_max, cost_km, cost_u)
     except Exception as e:
         return {"status": "error", "message": str(e)}
 

@@ -40,6 +40,8 @@ class INetworkSolver(ABC):
         nodes: List[SolverNode],
         links: List[SolverLink],
         demands: List[SolverDemand],
-        U_max: float
+        U_max: float,
+        cost_km: float,
+        cost_u: float
     ) -> SolverResult:
         pass
