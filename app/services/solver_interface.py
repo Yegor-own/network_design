@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
 
 class SolverNode(BaseModel):
     id: int
@@ -12,8 +13,8 @@ class SolverNode(BaseModel):
 
 class SolverLink(BaseModel):
     id: int
-    source_id: int
-    target_id: int
+    source_id: int = Field(validation_alias="node_a_id")
+    target_id: int = Field(validation_alias="node_b_id")
     distance: float
 
     class Config:
@@ -21,8 +22,8 @@ class SolverLink(BaseModel):
 
 class SolverDemand(BaseModel):
     id: int
-    source_id: int
-    dest_id: int
+    source_id: int = Field(validation_alias="source_node_id")
+    dest_id: int = Field(validation_alias="dest_node_id")
     volume: float  # h_d
 
     class Config:

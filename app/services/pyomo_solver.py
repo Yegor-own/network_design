@@ -5,11 +5,11 @@ from app.services.model import create_model
 
 class PyomoNetworkSolver(INetworkSolver):
 
-    def solve(self, nodes, links, demands, U_max, cost_km, cost_u):
+    def solve(self, nodes, links, demands, U_max, cost_km,cost_u):
 
-        model = create_model(nodes, links, demands, U_max, cost_km,cost_u)
+        model = create_model(nodes, links, demands, U_max,cost_km,cost_u)
 
-        solver = SolverFactory("cbc")
+        solver = SolverFactory("cbc", executable="/usr/local/bin/cbc")
         result = solver.solve(model)
 
         status = result.solver.termination_condition

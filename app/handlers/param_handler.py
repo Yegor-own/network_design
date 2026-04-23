@@ -11,12 +11,10 @@ router = APIRouter()
 def read_parameters(db: Session = Depends(get_db)):
     return param_crud.get_all_params(db)
 
-@router.patch("/parameters", response_model=ParameterRead)
-def update_parameter(update_data: ParameterUpdate, db: Session = Depends(get_db)):
-    updated_param = param_crud.update_param_by_key(
-        db, key=update_data.key, value=update_data.value
-    )
-    if not updated_param:
+@router.patch("/parameters/{key}", response_model=ParameterRead)
+def update_parameter(key: str, param_in: ParameterUpdate, db: Session = Depends(get_db)):
+    updated = param_crud.update_parameter(db, key, param_in.value)
+    if not updated:
         raise HTTPException(status_code=404, detail="Parameter not found")
-    return updated_param
+    return updated
 

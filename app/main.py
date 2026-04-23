@@ -1,9 +1,19 @@
 from fastapi import FastAPI
 from app.handlers import node_handler, link_handler, demand_handler, solver_handler, param_handler, result_handler
-from app.database import engine, Base
+from app.database import engine, SessionLocal, Base
+from app.db_seed import seed_network_parameters
 
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
+
+
+@app.on_event("startup")
+def on_startup():
+    db = SessionLocal()
+    try:
+        seed_network_parameters(db)
+    finally:
+        db.close()
 
 app.include_router(node_handler.router, prefix="/api/v1", tags=["Nodes"])
 app.include_router(link_handler.router, prefix="/api/v1", tags=["Candidate Links"])

@@ -18,7 +18,7 @@ def create_model(nodes, links, demands, U_max, cost_km, cost_u):
     model.U = Param(initialize=U_max)
 
     model.ckm = Param(initialize=cost_km)
-    model.cu = Param(initialize=cost_u)
+    model.cu  = Param(initialize=cost_u)
     model.de  = Param(model.E, initialize={l.id: l.distance for l in links})
 
     model.h = Param(model.D, initialize={d.id: d.volume for d in demands})
@@ -29,8 +29,8 @@ def create_model(nodes, links, demands, U_max, cost_km, cost_u):
 
     def objective_rule(m):
         return sum(
-            m.ckm[e] * m.de[e] * m.z[e] +
-            m.cu[e]  * m.u[e]
+            m.ckm * m.de[e] * m.z[e] +
+            m.cu * m.u[e]
             for e in m.E
         )
 

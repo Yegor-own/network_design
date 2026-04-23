@@ -1,13 +1,16 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
-class ParameterUpdate(BaseModel):
+class ParameterBase(BaseModel):
     key: str
     value: float
 
 
-class ParameterRead(ParameterUpdate):
+class ParameterUpdate(BaseModel):
+    value: float
+
+
+class ParameterRead(ParameterBase):
     description: str | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -5,6 +5,7 @@ from app.crud.flow import create_flow
 from app.crud.link import get_links_with_distance
 from app.crud.node import get_nodes_except_name
 from app.crud.result_link import create_result_link
+from app.crud.param import get_params_dict
 from app.models.models import FlowAssignment, ResultLink
 from app.services.solver_interface import SolverNode, SolverLink, SolverDemand
 from app.services.pyomo_solver import PyomoNetworkSolver
@@ -30,8 +31,12 @@ def run_network_optimization(db: Session):
     for demand in db_demands:
         demands_dto.append(SolverDemand.model_validate(demand))
 
-    U_max = 1000.0  # TODO from NetParam
-    cost_km, cost_u = 1, 1
+    params = get_params_dict(db)
+
+    U_max = params.get("U", 1000.0)
+    cost_km = params.get("c_km", 100.0)
+    cost_u = params.get("c_u", 10.0)
+
     solver = PyomoNetworkSolver()
 
     try:
