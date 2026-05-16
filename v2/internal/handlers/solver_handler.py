@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter
 
-from v2.src.core.services.optimization_service import OptimizationService
-from v2.src.internal.handlers.dependencies import get_optimization_service
+from v2.core.services.optimization_service import OptimizationService
+from v2.internal.handlers.dependencies import get_optimization_service
 
 router = APIRouter()
 

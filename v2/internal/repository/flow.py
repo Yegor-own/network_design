@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from repository import Session
 from v1.models.models import FlowAssignment
 
 def create_flow(db: Session, flow_in: FlowAssignment):

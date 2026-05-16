@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict
-from v2.src.core.entities import Node, LinkWithNodes, DemandWithNodes, NetworkParameter, SolverResult
+from v2.core.entities import Node, LinkWithNodes, DemandWithNodes, NetworkParameter, SolverResult
 
 class INodeRepository(ABC):
     @abstractmethod

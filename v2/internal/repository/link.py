@@ -1,10 +1,9 @@
-from sqlalchemy.orm import Session, aliased
-from geoalchemy2.functions import ST_DistanceSphere
-from typing import List
+from repository import Session, aliased, List, ST_DistanceSphere
 
-from v2.src.core.entities import Node, Link, LinkWithNodes
-from v2.src.core.interfaces import ILinkRepository
-from v2.src.internal.models.models import CandidateLink, Node as NodeModel
+
+from v2.core.entities import Node, Link, LinkWithNodes
+from v2.core.interfaces import ILinkRepository
+from v2.internal.models.models import CandidateLink, Node as NodeModel
 
 class SqlAlchemyLinkRepository(ILinkRepository):
     def __init__(self, db: Session):

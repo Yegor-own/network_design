@@ -1,8 +1,8 @@
 from pyomo.environ import SolverFactory
 
-from v2.src.core.interfaces import INetworkSolver
-from v2.src.core.entities import SolverResult
-from v2.src.internal.solver.model import create_model
+from v2.core.interfaces import INetworkSolver
+from v2.core.entities import SolverResult
+from v2.internal.solver.model import create_model
 
 
 class PyomoNetworkSolver(INetworkSolver):

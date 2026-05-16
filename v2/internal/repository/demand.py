@@ -1,9 +1,8 @@
-from sqlalchemy.orm import Session, aliased
-from typing import List
+from repository import Session, aliased, List
 
-from v2.src.core.entities import Node, DemandWithNodes
-from v2.src.core.interfaces import IDemandRepository
-from v2.src.internal.models.models import Demand as DemandModel, Node as NodeModel
+from v2.core.entities import Node, DemandWithNodes
+from v2.core.interfaces import IDemandRepository
+from v2.internal.models.models import Demand as DemandModel, Node as NodeModel
 
 
 class SqlAlchemyDemandRepository(IDemandRepository):

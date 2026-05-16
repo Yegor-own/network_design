@@ -1,4 +1,4 @@
-from v2.src.core.interfaces import (
+from v2.core.interfaces import (
     INodeRepository, ILinkRepository, IDemandRepository, 
     IParamRepository, IResultRepository, INetworkSolver
 )

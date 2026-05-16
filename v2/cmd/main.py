@@ -1,7 +1,8 @@
 from fastapi import FastAPI
-from v2.src.internal.handlers import node_handler, link_handler, demand_handler, solver_handler, param_handler, result_handler
-from v2.src.internal.db.connect import engine, SessionLocal, Base
-from v2.src.cmd.db_seed import seed_network_parameters
+from v2.internal.handlers import demand_handler, link_handler, node_handler, param_handler, result_handler
+from v2.internal.handlers import solver_handler
+from v2.internal.db.connect import engine, SessionLocal, Base
+from v2.cmd.db_seed import seed_network_parameters
 
 app = FastAPI()
 Base.metadata.create_all(bind=engine)

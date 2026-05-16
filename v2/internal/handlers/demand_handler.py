@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 
-from v2.src.core.entities import DemandWithNodes
-from v2.src.internal.db.connect import get_db
-from v2.src.internal.schemas.demand_schema import DemandCreate
-from v2.src.internal.repository.demand import SqlAlchemyDemandRepository
+from v2.core.entities import DemandWithNodes
+from v2.internal.db.connect import get_db
+from v2.internal.schemas.demand_schema import DemandCreate
+from v2.internal.repository.demand import SqlAlchemyDemandRepository
 
 router = APIRouter()
 

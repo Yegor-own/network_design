@@ -1,9 +1,9 @@
 
-from sqlalchemy.orm import Session
+from repository import Session
 
-from v2.src.core.interfaces import IResultRepository
-from v2.src.core.entities import SolverResult
-from v2.src.internal.models.models import ResultLink, CandidateLink, FlowAssignment
+from v2.core.interfaces import IResultRepository
+from v2.core.entities import SolverResult
+from v2.internal.models.models import ResultLink, CandidateLink, FlowAssignment
 
 class SqlAlchemyResultRepository(IResultRepository):
     def __init__(self, db: Session):

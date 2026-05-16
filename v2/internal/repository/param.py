@@ -1,9 +1,8 @@
-from sqlalchemy.orm import Session
-from typing import List
+from repository import Session, List
 
-from v2.src.core.entities import NetworkParameter
-from v2.src.core.interfaces import IParamRepository
-from v2.src.internal.models.models import NetworkParameter as NetworkParameterModel
+from v2.core.entities import NetworkParameter
+from v2.core.interfaces import IParamRepository
+from v2.internal.models.models import NetworkParameter as NetworkParameterModel
 
 class SqlAlchemyParamRepository(IParamRepository):
     def __init__(self, db: Session):

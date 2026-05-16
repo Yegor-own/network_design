@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from v2.src.core.entities import LinkWithNodes
-from v2.src.internal.db.connect import get_db
-from v2.src.internal.schemas.link_schema import LinkCreate
-from v2.src.internal.repository.link import SqlAlchemyLinkRepository
+from v2.core.entities import LinkWithNodes
+from v2.internal.db.connect import get_db
+from v2.internal.schemas.link_schema import LinkCreate
+from v2.internal.repository.link import SqlAlchemyLinkRepository
 
 router = APIRouter()
 

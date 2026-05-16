@@ -2,10 +2,10 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from v2.src.core.entities import Node
-from v2.src.internal.db.connect import get_db
-from v2.src.internal.schemas.node_schema import NodeCreate
-from v2.src.internal.repository.node import SqlAlchemyNodeRepository
+from v2.core.entities import Node
+from v2.internal.db.connect import get_db
+from v2.internal.schemas.node_schema import NodeCreate
+from v2.internal.repository.node import SqlAlchemyNodeRepository
 
 router = APIRouter()
 
