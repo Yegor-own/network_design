@@ -23,6 +23,11 @@ class Demand:
     volume: float
 
 @dataclass
+class NetworkParameter:
+    key: str
+    value: float
+
+@dataclass
 class ResultLink:
     link_id: int
     capacity: float

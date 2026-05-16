@@ -32,17 +32,3 @@ class SolverDemand(BaseModel):
 class SolverResult(BaseModel):
     links_results: Dict[int, Dict[str, float]]
     flows: List[dict]
-
-
-class INetworkSolver(ABC):
-    @abstractmethod
-    def solve(
-        self,
-        nodes: List[SolverNode],
-        links: List[SolverLink],
-        demands: List[SolverDemand],
-        U_max: float,
-        cost_km: float,
-        cost_u: float
-    ) -> SolverResult:
-        pass

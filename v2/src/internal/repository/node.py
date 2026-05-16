@@ -5,7 +5,6 @@ from typing import List
 from v2.src.core.interfaces import INodeRepository
 from v2.src.core.entities import Node as NodeEntity
 from v2.src.internal.models import to_geo_point, Node as NodeModel
-from v2.src.internal.schemas.node_schema import NodeCreate
 
 class SqlAlchemyNodeRepository(INodeRepository):
     def __init__(self, db: Session):

@@ -1,20 +1,23 @@
 from sqlalchemy.orm import Session
-from v1.models.models import NetworkParameter
+from typing import List
 
+from v2.src.core.entities import NetworkParameter
+from v2.src.core.interfaces import IParamRepository
+from v2.src.internal.models import NetworkParameter as NetworkParameterModel
 
-def update_parameter(db: Session, key: str, value: float):
-    db_param = db.query(NetworkParameter).filter(NetworkParameter.key == key).first()
-    if db_param:
-        db_param.value = value
-        db.commit()
-        db.refresh(db_param)
-    return db_param
+class SqlAlchemyParamRepository(IParamRepository):
+    def __init__(self, db: Session):
+        self.db = db
+    
+    def get_params_dict(self) -> List[NetworkParameter]:
+        params = self.db.query(NetworkParameterModel).all()
+        return {p.key: p.value for p in params}
 
+    def update_parameter(self, key: str, value: float) -> NetworkParameter:
+        db_param = self.db.query(NetworkParameterModel).filter(NetworkParameterModel.key == key).first()
+        if db_param:
+            db_param.value = value
+            self.db.commit()
+            self.db.refresh(db_param)
+        return db_param
 
-def get_all_params(db: Session):
-    return db.query(NetworkParameter).all()
-
-
-def get_params_dict(db: Session):
-    params = db.query(NetworkParameter).all()
-    return {p.key: p.value for p in params}

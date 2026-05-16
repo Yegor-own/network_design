@@ -1,22 +1,29 @@
 from sqlalchemy.orm import Session
-from v1.models.models import Demand
-from v1.schemas.demand_schema import DemandBase
+from typing import List
 
-def get_demands(db: Session):
-    return db.query(
-        Demand.id,
-        Demand.source_node_id,
-        Demand.dest_node_id,
-        Demand.volume
-    ).all()
+from v2.src.core.entities import Demand
+from v2.src.core.interfaces import IDemandRepository
 
-def create_demand(db: Session, demand: DemandBase):
-    new_demand = Demand(
-        source_node_id=demand.source_node_id,
-        dest_node_id=demand.dest_node_id,
-        volume=demand.volume
-    )
-    db.add(new_demand)
-    db.commit()
-    db.refresh(new_demand)
-    return new_demand
+
+class SqlAlchemyDemandRepository(IDemandRepository):
+    def __init__(self, db: Session):
+        self.db = db
+
+    def get_all(self) -> List[Demand]:
+        return self.db.query(
+            Demand.id,
+            Demand.source_node_id,
+            Demand.dest_node_id,
+            Demand.volume
+        ).all()
+    
+    def create_demand(self, source_node_id, dest_node_id, volume) -> Demand:
+        new_demand = Demand(
+            source_node_id=source_node_id,
+            dest_node_id=dest_node_id,
+            volume=volume
+        )
+        self.db.add(new_demand)
+        self.db.commit()
+        self.db.refresh(new_demand)
+        return new_demand

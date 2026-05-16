@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from geoalchemy2 import Geometry
 from geoalchemy2.elements import WKTElement
-from v2.src.cmd.database import Base
+from v2.src.internal.db.connect import Base
 
 def to_geo_point(lat: float, lng: float):
     return WKTElement(f'POINT({lng} {lat})', srid=4326)
