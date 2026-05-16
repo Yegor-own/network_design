@@ -1,40 +1,53 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict
-from v2.src.core.entities import Node, Link, Demand, NetworkParameter, SolverResult
+from v2.src.core.entities import Node, LinkWithNodes, DemandWithNodes, NetworkParameter, SolverResult
 
 class INodeRepository(ABC):
     @abstractmethod
     def get_all(self) -> List[Node]:
         pass
+
     @abstractmethod
     def create_node(self, name: str, lat: float, lng: float) -> Node:
         pass
 
+    @abstractmethod
+    def get_node_by_name(self, name: str) -> Node:
+        pass
+
 class ILinkRepository(ABC):
     @abstractmethod
-    def get_all_with_distance(self) -> List[Link]:
+    def get_all_with_distance(self) -> List[LinkWithNodes]:
         pass
 
     @abstractmethod
-    def get_link_by_id_with_distance(self, link_id: int) -> Link:
+    def get_link_by_id_with_distance(self, link_id: int) -> LinkWithNodes:
         pass
 
     @abstractmethod
-    def create_link(self, node_a_id, node_b_id) -> Link:
+    def create_link(self, source_node_id: int, dest_node_id: int) -> LinkWithNodes:
         pass
 
 class IDemandRepository(ABC):
     @abstractmethod
-    def get_all(self) -> List[Demand]:
+    def get_all(self) -> List[DemandWithNodes]:
         pass
 
     @abstractmethod
-    def create_demand(self, source_node_id, dest_node_id, volume) -> Demand:
+    def create_demand(self, source_node_id, dest_node_id, volume) -> DemandWithNodes:
+        pass
+
+    @abstractmethod
+    def get_demand_by_id(self, demand_id: int) -> DemandWithNodes:
+        pass
+
+    @abstractmethod
+    def delete_demand(self, demand_id) -> bool:
         pass
 
 class IParamRepository(ABC):
     @abstractmethod
-    def get_params_dict(self) -> List[NetworkParameter]:
+    def get_all(self) -> List[NetworkParameter]:
         pass
 
     @abstractmethod
@@ -54,7 +67,7 @@ class IResultRepository(ABC):
     @abstractmethod
     def get_active_links(self):
         pass
-    
+
     @abstractmethod
     def get_all_flows(self):
         pass

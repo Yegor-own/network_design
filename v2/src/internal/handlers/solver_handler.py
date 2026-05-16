@@ -1,15 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from v1.database import get_db
-from v1.services.optimization_service import run_network_optimization
+from fastapi import Depends, APIRouter
+
+from v2.src.core.services.optimization_service import OptimizationService
+from v2.src.internal.handlers.dependencies import get_optimization_service
 
 router = APIRouter()
 
 @router.post("/calculate", summary="Запустить расчет оптимальной топологии")
-def calculate_topology(db: Session = Depends(get_db)):
-    result = run_network_optimization(db)
-
-    if result["status"] == "error":
-        raise HTTPException(status_code=400, detail=result["message"])
-
-    return result
+def calculate_topology(service: OptimizationService = Depends(get_optimization_service)):
+    return service.run_optimization()

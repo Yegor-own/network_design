@@ -4,7 +4,7 @@ from typing import List
 
 from v2.src.core.interfaces import INodeRepository
 from v2.src.core.entities import Node as NodeEntity
-from v2.src.internal.models import to_geo_point, Node as NodeModel
+from v2.src.internal.models.models import to_geo_point, Node as NodeModel
 
 class SqlAlchemyNodeRepository(INodeRepository):
     def __init__(self, db: Session):
@@ -31,4 +31,12 @@ class SqlAlchemyNodeRepository(INodeRepository):
         self.db.add(new_node)
         self.db.commit()
         self.db.refresh(new_node)
-        return new_node
+        return NodeEntity(
+            id=new_node.id,
+            name=new_node.name,
+            lat=lat,
+            lng=lng
+        )
+    
+    def get_node_by_name(self, name: str) -> NodeEntity:
+        return self.db.query(NodeEntity).filter(NodeEntity.name == name).first()

@@ -19,7 +19,6 @@ def get_optimization_service(db: Session = Depends(get_db)):
     
     solver = PyomoNetworkSolver() 
 
-    # Собираем сервис
     return OptimizationService(
         node_repo, link_repo, demand_repo, 
         param_repo, result_repo, solver

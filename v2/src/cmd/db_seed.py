@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from v1.models.models import NetworkParameter
+from v2.src.internal.models.models import NetworkParameter
 
 
 def seed_network_parameters(db: Session):

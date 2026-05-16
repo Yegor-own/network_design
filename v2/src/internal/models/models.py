@@ -14,8 +14,8 @@ class Node(Base):
     name = Column(String, unique=True, index=True)
     location = Column(Geometry(geometry_type='POINT', srid=4326))
 
-    outgoing_links = relationship("CandidateLink", foreign_keys="[CandidateLink.node_a_id]", back_populates="node_a")
-    incoming_links = relationship("CandidateLink", foreign_keys="[CandidateLink.node_b_id]", back_populates="node_b")
+    outgoing_links = relationship("CandidateLink", foreign_keys="[CandidateLink.source_node_id]", back_populates="source_node")
+    incoming_links = relationship("CandidateLink", foreign_keys="[CandidateLink.dest_node_id]", back_populates="dest_node")
     demands_as_source = relationship("Demand", foreign_keys="[Demand.source_node_id]", back_populates="source_node")
     demands_as_dest = relationship("Demand", foreign_keys="[Demand.dest_node_id]", back_populates="dest_node")
 
@@ -23,11 +23,11 @@ class CandidateLink(Base):
     __tablename__ = "candidate_links"
 
     id = Column(Integer, primary_key=True, index=True)
-    node_a_id = Column(Integer, ForeignKey("nodes.id"))
-    node_b_id = Column(Integer, ForeignKey("nodes.id"))
+    source_node_id = Column(Integer, ForeignKey("nodes.id"))
+    dest_node_id = Column(Integer, ForeignKey("nodes.id"))
 
-    node_a = relationship("Node", foreign_keys=[node_a_id], back_populates="outgoing_links")
-    node_b = relationship("Node", foreign_keys=[node_b_id], back_populates="incoming_links")
+    source_node = relationship("Node", foreign_keys=[source_node_id], back_populates="outgoing_links")
+    dest_node = relationship("Node", foreign_keys=[dest_node_id], back_populates="incoming_links")
     result_link = relationship("ResultLink", foreign_keys="[ResultLink.candidate_link_id]", back_populates="candidate_link")
     flows = relationship("FlowAssignment", foreign_keys="[FlowAssignment.link_id]", back_populates="link")
 

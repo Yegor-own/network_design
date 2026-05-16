@@ -2,29 +2,23 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from v1.database import get_db
-from v1.schemas.node_schema import NodeCreate, NodeRead
-from v1.crud import node as node_crud
+from v2.src.core.entities import Node
+from v2.src.internal.db.connect import get_db
+from v2.src.internal.schemas.node_schema import NodeCreate
+from v2.src.internal.repository.node import SqlAlchemyNodeRepository
 
 router = APIRouter()
 
-@router.get("/nodes", response_model=List[NodeRead])
+@router.get("/nodes", response_model=List[Node])
 def get_nodes(db: Session = Depends(get_db)):
-    return node_crud.get_nodes(db)
+    node_repo = SqlAlchemyNodeRepository(db)
+    return node_repo.get_all()
 
-@router.post("/nodes", response_model=NodeRead)
+@router.post("/nodes", response_model=Node)
 def create_node(node_in: NodeCreate, db: Session = Depends(get_db)):
-    # Проверка бизнес-логики
-    if node_crud.get_node_by_name(db, node_in.name):
+    node_repo = SqlAlchemyNodeRepository(db)
+    if node_repo.get_node_by_name(node_in.name):
         raise HTTPException(status_code=400, detail="Name already registered")
 
-    # Вызов CRUD
-    new_node = node_crud.create_node(db, node_in)
-
-    # Мапим обратно для ответа (т.к. в БД лежит Geometry, а нам нужны lat/lng)
-    return NodeRead(
-        id=new_node.id,
-        name=new_node.name,
-        lat=node_in.lat,
-        lng=node_in.lng
-    )
+    new_node = node_repo.create_node(node_in.name, node_in.lat, node_in.lng)
+    return new_node

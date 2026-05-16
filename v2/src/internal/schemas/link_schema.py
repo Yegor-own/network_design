@@ -1,21 +1,5 @@
 from pydantic import BaseModel
-from v1.schemas.node_schema import NodeRead
 
-class CandidateLinkBase(BaseModel):
-    node_a_id: int
-    node_b_id: int
-
-
-class CandidateLinkRead(CandidateLinkBase):
-    id: int
-
-    class Config:
-        from_attributes = True
-
-class CandidateLinkReadFull(CandidateLinkRead):
-    node_a: NodeRead
-    node_b: NodeRead
-    distance: float
-
-    class Config:
-        from_attributes = True
+class LinkCreate(BaseModel):
+    source_node_id: int
+    dest_node_id: int

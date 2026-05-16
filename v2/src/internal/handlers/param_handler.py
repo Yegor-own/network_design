@@ -1,19 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 
-from v1.database import get_db
-from v1.schemas.param_schema import ParameterRead, ParameterUpdate
-from v1.crud import param as param_crud
+from v2.src.internal.db.connect import get_db
+from v2.src.core.entities import NetworkParameter
+from v2.src.internal.repository.param import SqlAlchemyParamRepository
 
 router = APIRouter()
 
-@router.get("/parameters", response_model=list[ParameterRead])
+@router.get("/parameters", response_model=List[NetworkParameter])
 def read_parameters(db: Session = Depends(get_db)):
-    return param_crud.get_all_params(db)
+    param_repo = SqlAlchemyParamRepository(db)
+    return param_repo.get_all()
 
-@router.patch("/parameters/{key}", response_model=ParameterRead)
-def update_parameter(key: str, param_in: ParameterUpdate, db: Session = Depends(get_db)):
-    updated = param_crud.update_parameter(db, key, param_in.value)
+@router.patch("/parameters/{key}", response_model=NetworkParameter)
+def update_parameter(key: str, value: float, db: Session = Depends(get_db)):
+    param_repo = SqlAlchemyParamRepository(db)
+    updated = param_repo.update_parameter(key, value)
     if not updated:
         raise HTTPException(status_code=404, detail="Parameter not found")
     return updated

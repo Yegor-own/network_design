@@ -16,20 +16,16 @@ def create_link(db: Session, link_in: CandidateLinkBase):
 
 
 def get_links_with_distance(db: Session):
-    # Создаем алиасы для узлов
     NodeA = aliased(Node)
     NodeB = aliased(Node)
 
-    # Строим запрос с двумя Join-ами
     results = db.query(
         CandidateLink,
-        # Делим на 1000, так как ST_DistanceSphere возвращает метры, а нам нужны КМ (по ТЗ)
         (ST_DistanceSphere(NodeA.location, NodeB.location) / 1000.0).label("distance")
     ).join(NodeA, CandidateLink.node_a_id == NodeA.id) \
         .join(NodeB, CandidateLink.node_b_id == NodeB.id) \
         .all()
 
-    # Мапим результат (CandidateLink, distance) в один объект для Pydantic
     output = []
     for link, dist in results:
         link.distance = dist  # Временно добавляем атрибут

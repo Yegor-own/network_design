@@ -16,6 +16,13 @@ class Link:
     distance: float
 
 @dataclass
+class LinkWithNodes:
+    id: int
+    source_node: Node
+    dest_node: Node
+    distance: float
+
+@dataclass
 class Demand:
     id: int
     source_node_id: int
@@ -23,9 +30,18 @@ class Demand:
     volume: float
 
 @dataclass
+class DemandWithNodes:
+    id: int
+    source_node: Node
+    dest_node: Node
+    volume: float
+
+@dataclass
 class NetworkParameter:
+    id: int
     key: str
     value: float
+    description: str
 
 @dataclass
 class ResultLink:
