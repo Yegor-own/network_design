@@ -3,6 +3,7 @@ from v2.core.interfaces import (
     IParamRepository, IResultRepository, INetworkSolver
 )
 from v2.core.entities import SolverResult, ResultLink, FlowAssignment
+from typing import List
 
 class OptimizationService:
     def __init__(

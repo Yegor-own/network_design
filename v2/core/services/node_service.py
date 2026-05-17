@@ -1,4 +1,3 @@
-# v2/core/services/node_service.py
 from typing import List
 from v2.core.entities import Node
 from v2.core.interfaces import INodeRepository
