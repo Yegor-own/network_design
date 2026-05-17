@@ -38,4 +38,18 @@ class SqlAlchemyNodeRepository(INodeRepository):
         )
     
     def get_node_by_name(self, name: str) -> NodeEntity:
-        return self.db.query(NodeEntity).filter(NodeEntity.name == name).first()
+        db_node = self.db.query(
+            NodeModel.id,
+            NodeModel.name,
+            ST_Y(NodeModel.location).label("lat"),
+            ST_X(NodeModel.location).label("lng")
+        ).filter(NodeModel.name == name).first()
+
+        if not db_node:
+            return None
+        return NodeEntity(
+            id=db_node.id,
+            name=db_node.name,
+            lat=db_node.lat,
+            lng=db_node.lng
+        )

@@ -1,37 +1,38 @@
 from v2.internal.repository import Session, List
 
-from v2.core.entities import NetworkParameter
+from v2.core.entities import NetworkParameter as ParameterEntity
 from v2.core.interfaces import IParamRepository
-from v2.internal.models.models import NetworkParameter as NetworkParameterModel
+from v2.internal.models.models import NetworkParameter as ParameterModel
 
 class SqlAlchemyParamRepository(IParamRepository):
     def __init__(self, db: Session):
         self.db = db
     
-    def get_all(self) -> List[NetworkParameter]:
-        results = self.db.query(NetworkParameterModel).all()
+    def get_all(self) -> List[ParameterEntity]:
+        results = self.db.query(ParameterModel).all()
+        return [
+            ParameterEntity(
+                id=p.id,
+                key=p.key,
+                value=p.value,
+                description=p.description
+            ) for p in results
+        ]
 
-        params: List[NetworkParameter] = []
-        for param in results:
-            params.append(NetworkParameter(
-                id=param.id,
-                key=param.key,
-                value=param.value,
-                description=param.description
-            ))
-        return params
+    def update_parameter(self, key: str, value: float) -> ParameterEntity:
+        db_param = self.db.query(ParameterModel).filter(ParameterModel.key == key).first()
+        
+        if not db_param:
+            return None
 
-    def update_parameter(self, key: str, value: float) -> NetworkParameter:
-        param = self.db.query(NetworkParameterModel).filter(NetworkParameterModel.key == key).first()
-        if param:
-            param.value = value
-            self.db.commit()
-            self.db.refresh(param)
+        db_param.value = value
+        self.db.commit()
+        self.db.refresh(db_param)
 
-        return NetworkParameter(
-                id=param.id,
-                key=param.key,
-                value=param.value,
-                description=param.description
-            )
+        return ParameterEntity(
+            id=db_param.id,
+            key=db_param.key,
+            value=db_param.value,
+            description=db_param.description
+        )
 

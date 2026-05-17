@@ -1,112 +1,90 @@
-from v2.internal.repository import Session, aliased, List, ST_DistanceSphere
+from v2.internal.repository import Session, aliased, List, ST_DistanceSphere, ST_Y, ST_X
 
 
-from v2.core.entities import Node, Link, LinkWithNodes
+from v2.core.entities import Node as NodeEntity, Link, LinkWithNodes
 from v2.core.interfaces import ILinkRepository
-from v2.internal.models.models import CandidateLink, Node as NodeModel
+from v2.internal.models.models import CandidateLink as LinkModel, Node as NodeModel
 
 class SqlAlchemyLinkRepository(ILinkRepository):
     def __init__(self, db: Session):
         self.db = db
 
-    def sql_to_linkwithnodes(row) -> LinkWithNodes:
-        link, dist, src, dst = row
-        src_node = Node(
-            id=src.id,
-            name=src.name,
-            lat=src.lat,
-            lng=src.lng
+    def _row_to_base_entity(self, row) -> Link:
+        link_orm, dist = row
+        return Link(
+            id=link_orm.id,
+            source_node_id=link_orm.source_node_id,
+            dest_node_id=link_orm.dest_node_id,
+            distance=float(dist) if dist else 0.0
         )
-        dst_node = Node(
-            id=dst.id,
-            name=dst.name,
-            lat=dst.lat,
-            lng=dst.lng
-        )
-        return LinkWithNodes(
-            link.id,
-            source_node=src_node,
-            dest_node=dst_node,
-            distance=dist
-        )
-    
+
+
     def get_all(self) -> List[Link]:
-        Source = aliased(NodeModel)
-        Dest = aliased(NodeModel)
+        Src = aliased(NodeModel)
+        Dst = aliased(NodeModel)
 
         results = self.db.query(
-            CandidateLink,
-            (ST_DistanceSphere(Source.location, Dest.location) / 1000.0).label("distance"),
-        ).join(Source, CandidateLink.source_node) \
-            .join(Dest, CandidateLink.dest_node) \
-            .all()
+            LinkModel,
+            (ST_DistanceSphere(Src.location, Dst.location) / 1000.0).label("distance")
+        ).join(Src, LinkModel.source_node_id == Src.id) \
+         .join(Dst, LinkModel.dest_node_id == Dst.id).all()
         
-        return [
-            Link(
-                id=link.id,
-                source_node_id=link.source_node_id,
-                dest_node_id=link.dest_node_id,
-                distance=float(dist) if dist else 0.0
-            )
-            for link, dist in results
-        ]
+        return [self._row_to_base_entity(row) for row in results]
 
-
-    def get_all_full(self) -> List[LinkWithNodes]:
-        Source = aliased(NodeModel)
-        Dest = aliased(NodeModel)
-
-        results = self.db.query(
-            CandidateLink,
-            (ST_DistanceSphere(Source.location, Dest.location) / 1000.0).label("distance"),
-            Source,
-            Dest
-        ).join(Source, CandidateLink.source_node) \
-            .join(Dest, CandidateLink.dest_node) \
-            .all()
-        
-        links: List[LinkWithNodes] = []
-        for row in results:
-            link =  self.sql_to_linkwithnodes(row)
-            links.append(link)
-        return links
-    
-    def get_link_by_id_full(self, link_id: int) -> LinkWithNodes:
-        Source = aliased(NodeModel)
-        Dest = aliased(NodeModel)
+    def get_link_by_id(self, link_id: int) -> Link:
+        Src = aliased(NodeModel)
+        Dst = aliased(NodeModel)
 
         result = self.db.query(
-            CandidateLink,
-            (ST_DistanceSphere(Source.location, Dest.location) / 1000.0).label("distance"),
-            Source,
-            Dest
-        ).join(Source, CandidateLink.source_node) \
-            .join(Dest, CandidateLink.dest_node) \
-            .filter(CandidateLink.id == link_id).first()
+            LinkModel,
+            (ST_DistanceSphere(Src.location, Dst.location) / 1000.0).label("distance")
+        ).join(Src, LinkModel.source_node_id == Src.id) \
+         .join(Dst, LinkModel.dest_node_id == Dst.id) \
+         .filter(LinkModel.id == link_id).first()
         
-        if result:
-            return self.sql_to_linkwithnodes(result)
-        return None
-    
-    def create_link(self, source_node_id: int, dest_node_id: int) -> LinkWithNodes:
-        new_link = CandidateLink(
-            source_node_id=source_node_id,
-            dest_node_id=dest_node_id,
+        return self._row_to_base_entity(result) if result else None
+
+    def _row_to_full_entity(self, row) -> LinkWithNodes:
+        link_orm, dist, s_id, s_name, s_lat, s_lng, d_id, d_name, d_lat, d_lng = row
+        
+        return LinkWithNodes(
+            id=link_orm.id,
+            source_node=NodeEntity(id=s_id, name=s_name, lat=s_lat, lng=s_lng),
+            dest_node=NodeEntity(id=d_id, name=d_name, lat=d_lat, lng=d_lng),
+            distance=float(dist) if dist else 0.0
         )
+    
+    def get_all_full(self) -> List[LinkWithNodes]:
+        Src = aliased(NodeModel)
+        Dst = aliased(NodeModel)
+
+        results = self.db.query(
+            LinkModel,
+            (ST_DistanceSphere(Src.location, Dst.location) / 1000.0).label("distance"),
+            Src.id, Src.name, ST_Y(Src.location), ST_X(Src.location), # Данные узла А
+            Dst.id, Dst.name, ST_Y(Dst.location), ST_X(Dst.location)  # Данные узла Б
+        ).join(Src, LinkModel.source_node_id == Src.id) \
+         .join(Dst, LinkModel.dest_node_id == Dst.id).all()
+        
+        return [self._row_to_full_entity(row) for row in results]
+
+    def create_link(self, source_node_id: int, dest_node_id: int) -> LinkWithNodes:
+        new_link = LinkModel(source_node_id=source_node_id, dest_node_id=dest_node_id)
         self.db.add(new_link)
         self.db.commit()
         self.db.refresh(new_link)
+        return self.get_link_by_id_full(new_link.id)
 
-        Source = aliased(NodeModel)
-        Dest = aliased(NodeModel)
-
+    def get_link_by_id_full(self, link_id: int) -> LinkWithNodes:
+        Src = aliased(NodeModel)
+        Dst = aliased(NodeModel)
         result = self.db.query(
-            CandidateLink,
-            (ST_DistanceSphere(Source.location, Dest.location) / 1000.0).label("distance"),
-            Source,
-            Dest
-        ).join(Source, CandidateLink.source_node) \
-            .join(Dest, CandidateLink.dest_node) \
-            .filter(CandidateLink.id == new_link.id).first()
+            LinkModel,
+            (ST_DistanceSphere(Src.location, Dst.location) / 1000.0).label("distance"),
+            Src.id, Src.name, ST_Y(Src.location), ST_X(Src.location),
+            Dst.id, Dst.name, ST_Y(Dst.location), ST_X(Dst.location)
+        ).join(Src, LinkModel.source_node_id == Src.id) \
+         .join(Dst, LinkModel.dest_node_id == Dst.id) \
+         .filter(LinkModel.id == link_id).first()
         
-        return self.sql_to_linkwithnodes(result)
+        return self._row_to_full_entity(result) if result else None

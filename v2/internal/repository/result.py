@@ -36,13 +36,20 @@ class SqlAlchemyResultRepository(IResultRepository):
     def get_result_links(self) -> List[ResultLinkEntity]:
         results = self.db.query(ResultLinkModel).all()
         return [
-            ResultLinkEntity(id=l.id, link_id=l.candidate_link_id, capacity=l.capacity)
-            for l in results
+            ResultLinkEntity(
+                id=l.id, 
+                link_id=l.candidate_link_id, 
+                capacity=l.capacity
+            ) for l in results
         ]
 
     def get_flows(self) -> List[FlowAssignmentEntity]:
         results = self.db.query(FlowAssignmentModel).all()
         return [
-            FlowAssignmentEntity(id=f.id, demand_id=f.demand_id, link_id=f.link_id, flow_value=f.flow_value)
-            for f in results
+            FlowAssignmentEntity(
+                id=f.id, 
+                demand_id=f.demand_id, 
+                link_id=f.link_id, 
+                flow_value=f.flow_value
+            ) for f in results
         ]
