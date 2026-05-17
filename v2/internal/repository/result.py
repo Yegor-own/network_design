@@ -1,5 +1,5 @@
 
-from repository import Session
+from v2.internal.repository import Session
 
 from v2.core.interfaces import IResultRepository
 from v2.core.entities import SolverResult
@@ -37,8 +37,8 @@ class SqlAlchemyResultRepository(IResultRepository):
             ResultLink.id,
             ResultLink.candidate_link_id,
             ResultLink.capacity,
-            CandidateLink.node_a_id,
-            CandidateLink.node_b_id
+            CandidateLink.source_node_id,
+            CandidateLink.dest_node_id
         ).join(CandidateLink, ResultLink.candidate_link_id == CandidateLink.id).all()
         return results
 

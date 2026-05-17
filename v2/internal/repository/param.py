@@ -1,4 +1,4 @@
-from repository import Session, List
+from v2.internal.repository import Session, List
 
 from v2.core.entities import NetworkParameter
 from v2.core.interfaces import IParamRepository

@@ -22,16 +22,16 @@ class OptimizationService:
 
     def run_optimization(self):
         nodes = self.node_repo.get_all()
-        links = self.link_repo.get_all_with_distance()
+        links = self.link_repo.get_all()
         demands = self.demand_repo.get_all()
         
-        params_list = self.param_repo.get_params_dict() 
-        params_dict = {p.key: p.value for p in params_list}
+        params = self.param_repo.get_all() 
+        # params_dict = {p.key: p.value for p in params_list}
 
         if not nodes or not links or not demands:
             raise ValueError("Недостаточно данных для расчета")
 
-        result = self.solver.solve(nodes, links, demands, params_dict)
+        result = self.solver.solve(nodes, links, demands, params)
 
         self.result_repo.clear_previous_results()
         self.result_repo.save_optimization_result(result)

@@ -12,12 +12,12 @@ router = APIRouter()
 @router.get("/demands/{demand_id}", response_model=DemandWithNodes)
 def get_demand_by_id(demand_id: int, db: Session = Depends(get_db)):
     demand_repo = SqlAlchemyDemandRepository(db)
-    return demand_repo.get_demand_by_id(demand_id)
+    return demand_repo.get_demand_by_id_full(demand_id)
 
 @router.get("/demands", response_model=List[DemandWithNodes])
 def get_demands(db: Session = Depends(get_db)):
     demand_repo = SqlAlchemyDemandRepository(db)
-    return demand_repo.get_all()
+    return demand_repo.get_all_full()
 
 @router.post("/demands", response_model=DemandWithNodes)
 def create_demand(demand_in: DemandCreate ,db: Session = Depends(get_db)):

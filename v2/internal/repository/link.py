@@ -1,4 +1,4 @@
-from repository import Session, aliased, List, ST_DistanceSphere
+from v2.internal.repository import Session, aliased, List, ST_DistanceSphere
 
 
 from v2.core.entities import Node, Link, LinkWithNodes
@@ -30,7 +30,29 @@ class SqlAlchemyLinkRepository(ILinkRepository):
             distance=dist
         )
     
-    def get_all_with_distance(self) -> List[LinkWithNodes]:
+    def get_all(self) -> List[Link]:
+        Source = aliased(NodeModel)
+        Dest = aliased(NodeModel)
+
+        results = self.db.query(
+            CandidateLink,
+            (ST_DistanceSphere(Source.location, Dest.location) / 1000.0).label("distance"),
+        ).join(Source, CandidateLink.source_node) \
+            .join(Dest, CandidateLink.dest_node) \
+            .all()
+        
+        return [
+            Link(
+                id=link.id,
+                source_node_id=link.source_node_id,
+                dest_node_id=link.dest_node_id,
+                distance=float(dist) if dist else 0.0
+            )
+            for link, dist in results
+        ]
+
+
+    def get_all_full(self) -> List[LinkWithNodes]:
         Source = aliased(NodeModel)
         Dest = aliased(NodeModel)
 
@@ -39,8 +61,8 @@ class SqlAlchemyLinkRepository(ILinkRepository):
             (ST_DistanceSphere(Source.location, Dest.location) / 1000.0).label("distance"),
             Source,
             Dest
-        ).join(Source, CandidateLink.source_node_id == Source.id) \
-            .join(Dest, CandidateLink.dest_node_id == Dest.id) \
+        ).join(Source, CandidateLink.source_node) \
+            .join(Dest, CandidateLink.dest_node) \
             .all()
         
         links: List[LinkWithNodes] = []
@@ -49,7 +71,7 @@ class SqlAlchemyLinkRepository(ILinkRepository):
             links.append(link)
         return links
     
-    def get_link_by_id_with_distance(self, link_id: int) -> LinkWithNodes:
+    def get_link_by_id_full(self, link_id: int) -> LinkWithNodes:
         Source = aliased(NodeModel)
         Dest = aliased(NodeModel)
 
@@ -58,15 +80,15 @@ class SqlAlchemyLinkRepository(ILinkRepository):
             (ST_DistanceSphere(Source.location, Dest.location) / 1000.0).label("distance"),
             Source,
             Dest
-        ).join(Source, CandidateLink.source_node_id == Source.id) \
-            .join(Dest, CandidateLink.dest_node_id == Dest.id) \
+        ).join(Source, CandidateLink.source_node) \
+            .join(Dest, CandidateLink.dest_node) \
             .filter(CandidateLink.id == link_id).first()
         
         if result:
             return self.sql_to_linkwithnodes(result)
         return None
     
-    def create_link(self, source_node_id: int, dest_node_id: int) -> Link:
+    def create_link(self, source_node_id: int, dest_node_id: int) -> LinkWithNodes:
         new_link = CandidateLink(
             source_node_id=source_node_id,
             dest_node_id=dest_node_id,
@@ -83,8 +105,8 @@ class SqlAlchemyLinkRepository(ILinkRepository):
             (ST_DistanceSphere(Source.location, Dest.location) / 1000.0).label("distance"),
             Source,
             Dest
-        ).join(Source, CandidateLink.source_node_id == Source.id) \
-            .join(Dest, CandidateLink.dest_node_id == Dest.id) \
+        ).join(Source, CandidateLink.source_node) \
+            .join(Dest, CandidateLink.dest_node) \
             .filter(CandidateLink.id == new_link.id).first()
         
         return self.sql_to_linkwithnodes(result)

@@ -12,12 +12,12 @@ router = APIRouter()
 @router.get("/links", response_model=List[LinkWithNodes])
 def get_links(db: Session = Depends(get_db)):
     link_repo = SqlAlchemyLinkRepository(db)
-    return link_repo.get_all_with_distance()
+    return link_repo.get_all_full()
 
 @router.get("/links/{link_id}", response_model=LinkWithNodes)
 def get_link_by_id(link_id: int, db: Session = Depends(get_db)):
     link_repo = SqlAlchemyLinkRepository(db)
-    link = link_repo.get_link_by_id_with_distance(link_id)
+    link = link_repo.get_link_by_id_full(link_id)
     if not link:
         raise HTTPException(status_code=404, detail="Link not found")
     return link

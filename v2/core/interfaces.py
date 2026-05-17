@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict
-from v2.core.entities import Node, LinkWithNodes, DemandWithNodes, NetworkParameter, SolverResult
+from v2.core.entities import Node, Link, LinkWithNodes, Demand, DemandWithNodes, NetworkParameter, SolverResult
 
 class INodeRepository(ABC):
     @abstractmethod
@@ -17,11 +17,19 @@ class INodeRepository(ABC):
 
 class ILinkRepository(ABC):
     @abstractmethod
-    def get_all_with_distance(self) -> List[LinkWithNodes]:
+    def get_all(self) -> List[Link]:
         pass
 
     @abstractmethod
-    def get_link_by_id_with_distance(self, link_id: int) -> LinkWithNodes:
+    def get_all_full(self) -> List[LinkWithNodes]:
+        pass
+
+    @abstractmethod
+    def get_link_by_id(self, link_id: int) -> Link:
+        pass
+
+    @abstractmethod
+    def get_link_by_id_full(self, link_id: int) -> LinkWithNodes:
         pass
 
     @abstractmethod
@@ -30,7 +38,11 @@ class ILinkRepository(ABC):
 
 class IDemandRepository(ABC):
     @abstractmethod
-    def get_all(self) -> List[DemandWithNodes]:
+    def get_all(self) -> List[Demand]:
+        pass
+
+    @abstractmethod
+    def get_all_full(self) -> List[DemandWithNodes]:
         pass
 
     @abstractmethod
@@ -38,7 +50,7 @@ class IDemandRepository(ABC):
         pass
 
     @abstractmethod
-    def get_demand_by_id(self, demand_id: int) -> DemandWithNodes:
+    def get_demand_by_id_full(self, demand_id: int) -> DemandWithNodes:
         pass
 
     @abstractmethod
@@ -79,6 +91,6 @@ class INetworkSolver(ABC):
         nodes: List[Node],
         links: List[Link],
         demands: List[Demand],
-        params: Dict[str, float]
+        params: List[NetworkParameter]
     ) -> SolverResult:
         pass

@@ -45,11 +45,13 @@ class NetworkParameter:
 
 @dataclass
 class ResultLink:
+    id: int
     link_id: int
     capacity: float
 
 @dataclass
 class FlowAssignment:
+    id: int
     demand_id: int
     link_id: int
     flow_value: float

@@ -1,6 +1,6 @@
-from repository import Session, aliased, List
+from v2.internal.repository import Session, aliased, List
 
-from v2.core.entities import Node, DemandWithNodes
+from v2.core.entities import Node, Demand, DemandWithNodes
 from v2.core.interfaces import IDemandRepository
 from v2.internal.models.models import Demand as DemandModel, Node as NodeModel
 
@@ -29,8 +29,28 @@ class SqlAlchemyDemandRepository(IDemandRepository):
             dest_node=dst_node,
             volume=demand.volume
         )
+    
+    def get_all(self) -> List[Demand]:
+        Source = aliased(NodeModel)
+        Dest = aliased(NodeModel)
 
-    def get_all(self) -> List[DemandWithNodes]:
+        results = self.db.query(
+            DemandModel,
+        ).join(Source, DemandModel.source_node) \
+            .join(Dest, DemandModel.dest_node) \
+            .all()
+
+        return [
+            Demand(
+                id=demand.id,
+                source_node_id=demand.source_node_id,
+                dest_node_id=demand.dest_node_id,
+                volume=demand.volume
+            )
+            for demand in results
+        ]
+
+    def get_all_full(self) -> List[DemandWithNodes]:
         Source = aliased(NodeModel)
         Dest = aliased(NodeModel)
 
@@ -48,7 +68,21 @@ class SqlAlchemyDemandRepository(IDemandRepository):
             demands.append(demand)
         return demands
     
-    def get_demand_by_id(self, demand_id: int) -> DemandWithNodes:
+    def get_demand_by_id_full(self, demand_id: int) -> DemandWithNodes:
+        Source = aliased(NodeModel)
+        Dest = aliased(NodeModel)
+
+        result = self.db.query(
+            DemandModel,
+        ).join(Source, DemandModel.source_node) \
+            .join(Dest, DemandModel.dest_node) \
+            .filter(DemandModel.id == demand_id).first()
+        
+        if result:
+            return self.sql_to_linkwithnodes(result)
+        return None
+
+    def get_demand_by_id(self, demand_id: int) -> Demand:
         Source = aliased(NodeModel)
         Dest = aliased(NodeModel)
 
@@ -61,7 +95,12 @@ class SqlAlchemyDemandRepository(IDemandRepository):
             .filter(DemandModel.id == demand_id).first()
         
         if result:
-            return self.sql_to_linkwithnodes(result)
+            return Demand(
+                    id=result.id,
+                    source_node_id=result.source_node_id,
+                    dest_node_id=result.dest_node_id,
+                    volume=result.volume
+                )
         return None
     
     def create_demand(self, source_node_id, dest_node_id, volume) -> DemandWithNodes:

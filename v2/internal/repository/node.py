@@ -1,5 +1,5 @@
 
-from repository import Session, List, ST_X, ST_Y
+from v2.internal.repository import Session, List, ST_X, ST_Y
 
 from v2.core.interfaces import INodeRepository
 from v2.core.entities import Node as NodeEntity
