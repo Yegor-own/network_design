@@ -1,19 +1,25 @@
 
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 from typing import List
-from v2.internal.db.connect import get_db
-from v2.internal.repository.result import SqlAlchemyResultRepository
-from v2.internal.schemas.result_schema import ResultLinkRead, FlowRead
+
+from v2.core.entities import ResultLink, FlowAssignment, SolverResult
+from v2.core.services.optimization_service import OptimizationService
+from v2.internal.handlers.dependencies import get_optimization_service
 
 router = APIRouter()
 
-@router.get("/results/links", response_model=List[ResultLinkRead])
-def read_active_links(db: Session = Depends(get_db)):
-    result_repo = SqlAlchemyResultRepository(db)
-    return result_repo.get_active_links(db)
+@router.post("/calculate", summary="Запустить расчет оптимальной топологии")
+def calculate_topology(service: OptimizationService = Depends(get_optimization_service)):
+    return service.run_optimization()
 
-@router.get("/results/flows", response_model=List[FlowRead])
-def read_flows(db: Session = Depends(get_db)):
-    result_repo = SqlAlchemyResultRepository(db)
-    return result_repo.get_all_flows(db)
+@router.get("/results/all", response_model=SolverResult)
+def get_solver_results(service: OptimizationService = Depends(get_optimization_service)):
+    return service.get_results()
+
+@router.get("/results/links", response_model=List[ResultLink])
+def get_result_links(service: OptimizationService = Depends(get_optimization_service)):
+    return service.get_result_links()
+
+@router.get("/results/flows", response_model=List[FlowAssignment])
+def get_flows(service: OptimizationService = Depends(get_optimization_service)):
+    return service.get_flows()

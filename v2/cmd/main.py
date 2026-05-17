@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from v2.internal.handlers import demand_handler, link_handler, node_handler, param_handler, result_handler
-from v2.internal.handlers import solver_handler
 from v2.internal.db.connect import engine, SessionLocal, Base
 from v2.cmd.db_seed import seed_network_parameters
 
@@ -19,6 +18,5 @@ def on_startup():
 app.include_router(node_handler.router, prefix="/api/v2", tags=["Nodes"])
 app.include_router(link_handler.router, prefix="/api/v2", tags=["Candidate Links"])
 app.include_router(demand_handler.router, prefix="/api/v2", tags=["Demands"])
-app.include_router(solver_handler.router, prefix="/api/v2", tags=["Solver"])
 app.include_router(param_handler.router, prefix="/api/v2", tags=["Parameters"])
 app.include_router(result_handler.router, prefix="/api/v2", tags=["Results"])

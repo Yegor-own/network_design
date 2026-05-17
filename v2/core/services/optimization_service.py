@@ -2,6 +2,7 @@ from v2.core.interfaces import (
     INodeRepository, ILinkRepository, IDemandRepository, 
     IParamRepository, IResultRepository, INetworkSolver
 )
+from v2.core.entities import SolverResult, ResultLink, FlowAssignment
 
 class OptimizationService:
     def __init__(
@@ -37,3 +38,15 @@ class OptimizationService:
         self.result_repo.save_optimization_result(result)
 
         return {"status": "success", "message": "Расчет успешно завершен"}
+    
+    def get_results(self) -> SolverResult:
+        return {
+            "links": self.result_repo.get_result_links(),
+            "flows": self.result_repo.get_flows()
+        }
+    
+    def get_result_links(self) -> List[ResultLink]:
+        return self.result_repo.get_result_links()
+    
+    def get_flows(self) -> List[FlowAssignment]:
+        return self.result_repo.get_flows()

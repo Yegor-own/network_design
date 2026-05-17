@@ -29,7 +29,9 @@ class SqlAlchemyParamRepository(IParamRepository):
             self.db.refresh(param)
 
         return NetworkParameter(
+                id=param.id,
                 key=param.key,
-                value=param.value
+                value=param.value,
+                description=param.description
             )
 

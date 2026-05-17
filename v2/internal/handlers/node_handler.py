@@ -1,24 +1,20 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 
 from v2.core.entities import Node
-from v2.internal.db.connect import get_db
 from v2.internal.schemas.node_schema import NodeCreate
-from v2.internal.repository.node import SqlAlchemyNodeRepository
+from v2.core.services.node_service import NodeService
+from v2.internal.handlers.dependencies import get_node_service
 
 router = APIRouter()
 
 @router.get("/nodes", response_model=List[Node])
-def get_nodes(db: Session = Depends(get_db)):
-    node_repo = SqlAlchemyNodeRepository(db)
-    return node_repo.get_all()
+def get_nodes(service: NodeService = Depends(get_node_service)):
+    return service.get_all_nodes()
 
 @router.post("/nodes", response_model=Node)
-def create_node(node_in: NodeCreate, db: Session = Depends(get_db)):
-    node_repo = SqlAlchemyNodeRepository(db)
-    if node_repo.get_node_by_name(node_in.name):
-        raise HTTPException(status_code=400, detail="Name already registered")
-
-    new_node = node_repo.create_node(node_in.name, node_in.lat, node_in.lng)
-    return new_node
+def create_node(node_in: NodeCreate, service: NodeService = Depends(get_node_service)):
+    try:
+        return service.create_new_node(node_in.name, node_in.lat, node_in.lng)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
