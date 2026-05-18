@@ -2,7 +2,7 @@ from v2.core.interfaces import (
     INodeRepository, ILinkRepository, IDemandRepository, 
     IParamRepository, IResultRepository, INetworkSolver
 )
-from v2.core.entities import SolverResult, ResultLink, FlowAssignment, OptimizationResponse
+from v2.core.entities import SolverResult, ResultLink, FlowAssignment, OptimizationResponse, NetworkCost
 from typing import List
 
 class OptimizationService:
@@ -33,7 +33,11 @@ class OptimizationService:
         if not nodes or not links or not demands:
             raise ValueError("Недостаточно данных для расчета")
 
-        result = self.solver.solve(nodes, links, demands, params)
+        # result = self.solver.solve(nodes, links, demands, params)
+        try:
+            result = self.solver.solve(nodes, links, demands, params)
+        except Exception as e:
+            return e
 
         self.result_repo.clear_previous_results()
         self.result_repo.save_optimization_result(result)
