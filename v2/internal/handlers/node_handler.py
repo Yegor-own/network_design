@@ -18,3 +18,8 @@ def create_node(node_in: NodeCreate, service: NodeService = Depends(get_node_ser
         return service.create_node(node_in.name, node_in.lat, node_in.lng)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+@router.delete("/all")
+def delete_all(service: NodeService = Depends(get_node_service)):
+    service.reset_network()
+    return {"message": "Все данные сети успешно удалены"}

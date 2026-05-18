@@ -51,3 +51,10 @@ class OptimizationService:
     
     def get_flows(self) -> List[FlowAssignment]:
         return self.result_repo.get_flows()
+    
+    def get_total_cost(self) -> NetworkCost:
+        params = {p.key: p.value for p in self.param_repo.get_all()}
+        c_km = params.get("c_km", 0.0)
+        c_u = params.get("c_u", 0.0)
+        
+        return self.result_repo.calculate_total_cost(c_km, c_u)

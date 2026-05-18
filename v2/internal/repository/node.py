@@ -3,7 +3,7 @@ from v2.internal.repository import Session, List, ST_X, ST_Y
 
 from v2.core.interfaces import INodeRepository
 from v2.core.entities import Node as NodeEntity
-from v2.internal.models.models import to_geo_point, Node as NodeModel
+from v2.internal.models.models import to_geo_point, Node as NodeModel, CandidateLink, Demand, ResultLink, FlowAssignment
 
 class SqlAlchemyNodeRepository(INodeRepository):
     def __init__(self, db: Session):
@@ -53,3 +53,11 @@ class SqlAlchemyNodeRepository(INodeRepository):
             lat=db_node.lat,
             lng=db_node.lng
         )
+    
+    def delete_all_data(self) -> None:
+        self.db.query(FlowAssignment).delete()
+        self.db.query(ResultLink).delete()
+        self.db.query(Demand).delete()
+        self.db.query(CandidateLink).delete()
+        self.db.query(NodeModel).delete()
+        self.db.commit()

@@ -1,9 +1,9 @@
 
-from v2.internal.repository import Session, List
+from v2.internal.repository import Session, List, aliased, ST_DistanceSphere
 
 from v2.core.interfaces import IResultRepository
-from v2.core.entities import SolverResult
-from v2.internal.models.models import ResultLink as ResultLinkModel, FlowAssignment as FlowAssignmentModel
+from v2.core.entities import SolverResult, NetworkCost
+from v2.internal.models.models import ResultLink as ResultLinkModel, FlowAssignment as FlowAssignmentModel, CandidateLink as CandidateLinkModel, Node as NodeModel
 from v2.core.entities import ResultLink as ResultLinkEntity, FlowAssignment as FlowAssignmentEntity
 
 class SqlAlchemyResultRepository(IResultRepository):
@@ -53,3 +53,28 @@ class SqlAlchemyResultRepository(IResultRepository):
                 flow_value=f.flow_value
             ) for f in results
         ]
+    
+    def calculate_total_cost(self, c_km: float, c_u: float) -> NetworkCost:
+        Src = aliased(NodeModel)
+        Dst = aliased(NodeModel)
+
+        query = self.db.query(
+            ResultLinkModel.capacity,
+            (ST_DistanceSphere(Src.location, Dst.location) / 1000.0).label("distance")
+        ).join(CandidateLinkModel, ResultLinkModel.candidate_link_id == CandidateLinkModel.id) \
+        .join(Src, CandidateLinkModel.source_node_id == Src.id) \
+        .join(Dst, CandidateLinkModel.dest_node_id == Dst.id) \
+        .all()
+
+        links_fixed_cost = 0.0
+        capacity_cost = 0.0
+
+        for capacity, distance in query:
+            links_fixed_cost += c_km * distance
+            capacity_cost += c_u * capacity
+
+        return NetworkCost(
+            total_cost=links_fixed_cost + capacity_cost,
+            links_fixed_cost=round(links_fixed_cost, 2),
+            capacity_cost=round(capacity_cost, 2)
+        )

@@ -13,3 +13,6 @@ class NodeService:
         if self.node_repo.get_node_by_name(name):
             raise ValueError(f"Узел с именем '{name}' уже существует")
         return self.node_repo.create_node(name, lat, lng)
+    
+    def reset_network(self):
+        self.node_repo.delete_all_data()

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict
-from v2.core.entities import Node, Link, LinkWithNodes, Demand, DemandWithNodes, NetworkParameter, ResultLink, FlowAssignment, SolverResult
+from v2.core.entities import Node, Link, LinkWithNodes, Demand, DemandWithNodes, NetworkParameter, ResultLink, FlowAssignment, SolverResult, NetworkCost
 
 class INodeRepository(ABC):
     @abstractmethod
@@ -82,6 +82,10 @@ class IResultRepository(ABC):
 
     @abstractmethod
     def get_flows(self) -> List[FlowAssignment]:
+        pass
+
+    @abstractmethod
+    def calculate_total_cost(self, c_km: float, c_u: float) -> NetworkCost:
         pass
 
 class INetworkSolver(ABC):

@@ -60,3 +60,9 @@ class FlowAssignment:
 class SolverResult:
     links: List[ResultLink]
     flows: List[FlowAssignment]
+
+@dataclass
+class NetworkCost:
+    total_cost: float
+    links_fixed_cost: float
+    capacity_cost: float
