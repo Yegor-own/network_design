@@ -22,3 +22,8 @@ class LinkService:
         if source_id == dest_id:
             raise ValueError("Начальный и конечный узлы не могут совпадать")
         return self.link_repo.create_link(source_id, dest_id)
+    
+    def delete_link(self, link_id: int):
+        success = self.link_repo.delete_link(link_id)
+        if not success:
+            raise ValueError("Путь не найден")

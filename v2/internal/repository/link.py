@@ -88,3 +88,12 @@ class SqlAlchemyLinkRepository(ILinkRepository):
          .filter(LinkModel.id == link_id).first()
         
         return self._row_to_full_entity(result) if result else None
+    
+    def delete_link(self, link_id) -> bool:
+        db_link = self.db.query(LinkModel).filter(LinkModel.id == link_id).first()
+        if not db_link:
+            return False
+            
+        self.db.delete(db_link)
+        self.db.commit()
+        return True

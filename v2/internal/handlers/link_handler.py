@@ -24,3 +24,11 @@ def get_link_by_id(link_id: int, service: LinkService = Depends(get_link_service
 @router.post("/links", response_model=LinkWithNodes)
 def create_link(link_in: LinkCreate, service: LinkService = Depends(get_link_service)):
     return service.create_candidate_link(link_in.source_node_id, link_in.dest_node_id) #TODO some error check
+
+@router.delete("/links/{link_id}")
+def delete_link(link_id: int, service: LinkService = Depends(get_link_service)):
+    status = service.delete_link(link_id)
+    if status: 
+        return {"status": "ok"}
+    else: 
+        return {"status": "failed"}

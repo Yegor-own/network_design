@@ -36,6 +36,10 @@ class ILinkRepository(ABC):
     def create_link(self, source_node_id: int, dest_node_id: int) -> LinkWithNodes:
         pass
 
+    @abstractmethod
+    def delete_link(self, link_id) -> bool:
+        pass
+
 class IDemandRepository(ABC):
     @abstractmethod
     def get_all(self) -> List[Demand]:
