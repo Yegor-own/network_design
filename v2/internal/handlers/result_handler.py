@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 
-from v2.core.entities import ResultLink, FlowAssignment, SolverResult, NetworkCost, OptimizationResponse
+from v2.core.entities import ResultLinkWithNodes, FlowAssignment, SolverResult, NetworkCost, OptimizationResponse
 from v2.core.services.optimization_service import OptimizationService
 from v2.internal.handlers.dependencies import get_optimization_service
 
@@ -19,9 +19,9 @@ def calculate_topology(service: OptimizationService = Depends(get_optimization_s
 def get_solver_results(service: OptimizationService = Depends(get_optimization_service)):
     return service.get_results()
 
-@router.get("/results/links", response_model=List[ResultLink])
+@router.get("/results/links", response_model=List[ResultLinkWithNodes])
 def get_result_links(service: OptimizationService = Depends(get_optimization_service)):
-    return service.get_result_links()
+    return service.get_active_network_topology()
 
 @router.get("/results/flows", response_model=List[FlowAssignment])
 def get_flows(service: OptimizationService = Depends(get_optimization_service)):

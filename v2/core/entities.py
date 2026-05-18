@@ -50,6 +50,14 @@ class ResultLink:
     capacity: float
 
 @dataclass
+class ResultLinkWithNodes:
+    id: int              
+    link_id: int
+    capacity: float
+    source_node: Node
+    dest_node: Node
+
+@dataclass
 class FlowAssignment:
     id: int
     demand_id: int

@@ -2,7 +2,7 @@ from v2.core.interfaces import (
     INodeRepository, ILinkRepository, IDemandRepository, 
     IParamRepository, IResultRepository, INetworkSolver
 )
-from v2.core.entities import SolverResult, ResultLink, FlowAssignment, OptimizationResponse, NetworkCost
+from v2.core.entities import SolverResult, ResultLink, FlowAssignment, OptimizationResponse, NetworkCost, ResultLinkWithNodes
 from typing import List
 
 class OptimizationService:
@@ -70,3 +70,6 @@ class OptimizationService:
         c_u = params.get("c_u", 0.0)
         
         return self.result_repo.calculate_total_cost(c_km, c_u)
+    
+    def get_active_network_topology(self) -> List[ResultLinkWithNodes]:
+        return self.result_repo.get_active_links_full()
