@@ -66,3 +66,11 @@ class NetworkCost:
     total_cost: float
     links_fixed_cost: float
     capacity_cost: float
+
+@dataclass
+class OptimizationResponse:
+    status: str
+    message: str
+    total_cost: float
+    links_built_count: int 
+    flows_assigned_count: int

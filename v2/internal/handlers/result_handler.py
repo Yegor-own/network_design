@@ -1,16 +1,19 @@
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 
-from v2.core.entities import ResultLink, FlowAssignment, SolverResult, NetworkCost
+from v2.core.entities import ResultLink, FlowAssignment, SolverResult, NetworkCost, OptimizationResponse
 from v2.core.services.optimization_service import OptimizationService
 from v2.internal.handlers.dependencies import get_optimization_service
 
 router = APIRouter()
 
-@router.post("/calculate", summary="Запустить расчет оптимальной топологии")
+@router.post("/calculate", response_model=OptimizationResponse)
 def calculate_topology(service: OptimizationService = Depends(get_optimization_service)):
-    return service.run_optimization()
+    try:
+        return service.run_optimization()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/results/all", response_model=SolverResult)
 def get_solver_results(service: OptimizationService = Depends(get_optimization_service)):

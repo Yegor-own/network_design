@@ -2,7 +2,7 @@ from v2.core.interfaces import (
     INodeRepository, ILinkRepository, IDemandRepository, 
     IParamRepository, IResultRepository, INetworkSolver
 )
-from v2.core.entities import SolverResult, ResultLink, FlowAssignment
+from v2.core.entities import SolverResult, ResultLink, FlowAssignment, OptimizationResponse
 from typing import List
 
 class OptimizationService:
@@ -38,7 +38,15 @@ class OptimizationService:
         self.result_repo.clear_previous_results()
         self.result_repo.save_optimization_result(result)
 
-        return {"status": "success", "message": "Расчет успешно завершен"}
+        cost_info = self.get_total_cost()
+
+        return OptimizationResponse(
+            status="success",
+            message="Расчет успешно завершен",
+            total_cost=cost_info.total_cost,
+            links_built_count=len(result.links),
+            flows_assigned_count=len(result.flows)
+        )
     
     def get_results(self) -> SolverResult:
         return {
